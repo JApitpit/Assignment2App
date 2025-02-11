@@ -53,7 +53,7 @@ const SignInForm = () => {
       <Text style={styles.title}>Sign In Bro, Hurry</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter your username"
+        placeholder="Username"
         value={username}
         onChangeText={(text) => {
           setUsername(text);
