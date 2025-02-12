@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
+const data = require("../credentials.json")
+
 const SignInForm = () => {
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [usernameError, setUsernameError] = useState<string | null>(null);
@@ -38,15 +41,45 @@ const SignInForm = () => {
     }
   };
 
+  function validateSignIn(): boolean {
+    for (const user of data.users) {
+      if (user.username == username && user.password == password) {
+        return true;
+      }
+    }
+    return false;
+  } 
+
   const handleSignIn = (): void => {
     const isUsernameValid = validateUsername(username);
     const isPasswordValid = validatePassword(password);
 
-    //
-    if (isUsernameValid && isPasswordValid) {
+    const signIn = validateSignIn();
+
+    if (signIn) {
+      Alert.alert(
+        'Hey fren', 
+        'We searched our database, you are like, positively logged in bro!', 
+        [
+          {
+            text: 'Close', 
+          },
+        ]
+      );
     } else {
+      Alert.alert(
+        'BIG OOF LMAO', 
+        'Yeah... that is like not an actual account lmfao. maybe,,, try again???', 
+        [
+          {
+            text: 'Close', 
+          },
+        ]
+      );
     }
+
   };
+
 
   return (
     <View style={styles.container}>
