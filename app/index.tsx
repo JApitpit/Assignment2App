@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 
-const data = require("../credentials.json")
+const data = require("../credentials.json");
 
-const SignInForm = () => {
+export default function SignInForm() {
+  const router = useRouter();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -11,34 +13,22 @@ const SignInForm = () => {
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const validateUsername = (text: string): boolean => {
-    if (text === '') {
-      setUsernameError(null);  
+    if (text.length < 5) {
+      setUsernameError('Username must be at least 5 characters long.');
       return false;
-    } else if (text.length < 5) {
-      setUsernameError('Username unacceptable. Rewrite with at least 5 letters.');
-      return false;
-    } else {
-      setUsernameError(null);
-      return true;
     }
+    setUsernameError(null);
+    return true;
   };
-  
 
   const validatePassword = (text: string): boolean => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (text === '') {
-      setPasswordError(null);
+    if (!passwordRegex.test(text)) {
+      setPasswordError('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.');
       return false;
     }
-    else if (!passwordRegex.test(text)) {
-      setPasswordError(
-        'Password must have: \n   At least 8 characters \n   One uppercase letter \n   One lowercase letter \n   One number \n   One special character'
-      );
-      return false;
-    } else {
-      setPasswordError(null);
-      return true;
-    }
+    setPasswordError(null);
+    return true;
   };
 
   function validateSignIn(): boolean {
@@ -51,47 +41,21 @@ const SignInForm = () => {
   } 
 
   const handleSignIn = (): void => {
-    const isUsernameValid = validateUsername(username);
-    const isPasswordValid = validatePassword(password);
-
-    const signIn = validateSignIn();
-
-    if (signIn) {
-      Alert.alert(
-        'Hey fren', 
-        'We searched our database, you are like, positively logged in bro!', 
-        [
-          {
-            text: 'Close', 
-          },
-        ]
-      );
+    if (validateUsername(username) && validatePassword(password) && validateSignIn()) {
+      router.push('/home');
     } else {
-      Alert.alert(
-        'BIG OOF LMAO', 
-        'Yeah... that is like not an actual account lmfao. maybe,,, try again???', 
-        [
-          {
-            text: 'Close', 
-          },
-        ]
-      );
+      Alert.alert('Error', 'Invalid username or password. Try again.');
     }
-
   };
-
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign In Bro, Hurry</Text>
+      <Text style={styles.title}>Sign In</Text>
       <TextInput
         style={styles.input}
         placeholder="Username"
         value={username}
-        onChangeText={(text) => {
-          setUsername(text);
-          validateUsername(text);
-        }}
+        onChangeText={text => { setUsername(text); validateUsername(text); }}
       />
       {usernameError && <Text style={styles.errorText}>{usernameError}</Text>}
 
@@ -99,10 +63,8 @@ const SignInForm = () => {
         style={styles.input}
         placeholder="Password"
         value={password}
-        onChangeText={(text) => {
-          setPassword(text);
-          validatePassword(text);
-        }}
+        onChangeText={text => { setPassword(text); validatePassword(text); }}
+        secureTextEntry
       />
       {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
 
@@ -111,7 +73,8 @@ const SignInForm = () => {
       </TouchableOpacity>
     </View>
   );
-};
+}
+
 
 const styles = StyleSheet.create({
   container: {
@@ -151,5 +114,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-export default SignInForm;

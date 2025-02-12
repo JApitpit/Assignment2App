@@ -1,20 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
-import SignInForm from './app/sign-in'; 
-
+import { Stack } from 'expo-router';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <SignInForm />
-    </View>
-  );
+  return <Stack />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',  
-    backgroundColor: '#f5f5f5',
-  },
-});
