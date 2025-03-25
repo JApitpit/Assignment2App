@@ -9,6 +9,45 @@ const SignUpForm = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
 
+  const handleSubmit = async (): Promise<void> => {
+    if (!email || !password || !firstName || !lastName) {
+      Alert.alert('Error', 'All fields are required');
+      return;
+    };
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    
+  if (error) {
+    Alert.alert('Sign Up Failed', error.message);
+    return;
+  }
+
+  const userId = data.user?.id;
+  if (!userId) {
+    Alert.alert('Error', 'User ID missing');
+    return;
+  }
+
+  // Insert additional user details into custom "users" table
+  const { error: insertError } = await insertUser({
+    email: email,
+    firstName: firstName,
+    lastName: lastName,
+
+  });
+
+  if (insertError) {
+    Alert.alert('Error', insertError);
+    return;
+  }
+
+  Alert.alert('Success', 'Account created successfully!');
+
+  };
 
   return (
     <View style={styles.container}>
@@ -42,7 +81,7 @@ const SignUpForm = () => {
 
       
       <TouchableOpacity style={styles.button} >
-        <Text style={styles.buttonText}>Sign Up</Text>
+        <Text style={styles.buttonText} onPress={handleSubmit}>Sign Up</Text>
       </TouchableOpacity>
     </View>
   );

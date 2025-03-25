@@ -21,5 +21,5 @@ export const insertUser = async (userData: {
       throw error;
     }
   
-    return data;
+    return { error: error || null, data: data || null };
 };
