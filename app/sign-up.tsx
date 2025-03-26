@@ -43,15 +43,19 @@ const SignUpForm = () => {
     return;
   }
 
-  const { error: insertError } = await insertUser({
-    email: email,
-    firstName: firstName,
-    lastName: lastName,
-
-  });
+  const { error: insertError } = await supabase
+          .from('user_details')
+          .insert([
+            {
+              uuid: userId, // Supabase user ID
+              email: email,
+              first_name: firstName,
+              last_name: lastName,
+            },
+          ]);
 
   if (insertError) {
-    Alert.alert('Error', insertError);
+    Alert.alert('Error', insertError.message);
     setLoading(false);
     return;
   }

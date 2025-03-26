@@ -19,6 +19,7 @@ const LandingPage = () => {
           .single();
 
         if (error) {
+          console.log('User:', user.id);
           console.error('Error fetching user details:', error);
         } else {
           setUserName(`${data.first_name} ${data.last_name}`);
