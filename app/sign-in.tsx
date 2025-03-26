@@ -1,42 +1,46 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-
+import { supabase } from '../lib/supabase';
+import { useNavigation } from '@react-navigation/native';
 // const data = require("../credentials.json")
 
 const SignInForm = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const navigation = useNavigation();
+
   // const [passwordError, setPasswordError] = useState<string | null>(null);
   
+  const handleSignIn = async (): Promise<void> => {
+    if (loading) {return;};
+    if (!email || !password) {
+      Alert.alert('Error', 'Email and password are required.');
+      return;
+    }
 
-  // const validatePassword = (text: string): boolean => {
-  //   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  //   if (text === '') {
-  //     setPasswordError(null);
-  //     return false;
-  //   }
-  //   else if (!passwordRegex.test(text)) {
-  //     setPasswordError(
-  //       'Password must have: \n   At least 8 characters \n   One uppercase letter \n   One lowercase letter \n   One number \n   One special character'
-  //     );
-  //     return false;
-  //   } else {
-  //     setPasswordError(null);
-  //     return true;
-  //   }
-  // };
+    setLoading(true);
 
-  // function validateSignIn(): boolean {
-  //   for (const user of data.users) {
-  //     if (user.email == email && user.password == password) {
-  //       return true;
-  //     }
-  //   }
-  //   return false;
-  // } 
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      Alert.alert('Sign In Failed', error.message);
+      setLoading(false);
+      return;
+    }
+
+    Alert.alert('Success', 'You are now signed in!');
+    setLoading(false);
+    navigation.navigate("LandingPage");
+  };
+
   
-  const handleSignIn = (): void => {
+  //const handleSignIn = (): void => {
     // const isPasswordValid = validatePassword(password);
 
     // const signIn = validateSignIn();
@@ -63,7 +67,7 @@ const SignInForm = () => {
     //   );
     // }
 
-  };
+  //};
 
 
   return (
@@ -90,6 +94,10 @@ const SignInForm = () => {
 
       <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>Sign In</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SignUp')}>
+        <Text style={styles.buttonText}>Don't have an account? Sign Up</Text>
       </TouchableOpacity>
     </View>
   );
@@ -123,6 +131,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   button: {
+    margin: 10,
     padding: 10,
     justifyContent: 'center',
     borderRadius: 5,

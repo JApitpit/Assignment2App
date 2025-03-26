@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { insertUser } from '../lib/supabase_crud';
+import { useNavigation } from '@react-navigation/native';
 
 const SignUpForm = () => {
   const [email, setEmail] = useState('');
@@ -10,6 +11,8 @@ const SignUpForm = () => {
   const [lastName, setLastName] = useState('');
 
   const [loading, setLoading] = useState(false);
+
+  const navigation = useNavigation();
 
   const handleSubmit = async (): Promise<void> => {
     if (loading) {return};
@@ -91,6 +94,10 @@ const SignUpForm = () => {
       <TouchableOpacity style={styles.button} >
         <Text style={styles.buttonText} onPress={handleSubmit}>Sign Up</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SignIn')}>
+        <Text style={styles.buttonText}>Have an account? Sign in</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -123,6 +130,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   button: {
+    margin: 10,
     padding: 10,
     justifyContent: 'center',
     borderRadius: 5,
