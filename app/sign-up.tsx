@@ -9,11 +9,17 @@ const SignUpForm = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
 
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (): Promise<void> => {
+    if (loading) {return};
+
     if (!email || !password || !firstName || !lastName) {
       Alert.alert('Error', 'All fields are required');
       return;
     };
+
+    setLoading(true);
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -23,16 +29,17 @@ const SignUpForm = () => {
     
   if (error) {
     Alert.alert('Sign Up Failed', error.message);
+    setLoading(false);
     return;
   }
 
   const userId = data.user?.id;
   if (!userId) {
     Alert.alert('Error', 'User ID missing');
+    setLoading(false);
     return;
   }
 
-  // Insert additional user details into custom "users" table
   const { error: insertError } = await insertUser({
     email: email,
     firstName: firstName,
@@ -42,11 +49,12 @@ const SignUpForm = () => {
 
   if (insertError) {
     Alert.alert('Error', insertError);
+    setLoading(false);
     return;
   }
 
   Alert.alert('Success', 'Account created successfully!');
-
+  setLoading(false);
   };
 
   return (
